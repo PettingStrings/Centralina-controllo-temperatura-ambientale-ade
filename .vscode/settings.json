@@ -1,0 +1,10 @@
+{
+    "files.associations": {
+        "*.embeddedhtml": "html",
+        "utils.h": "c",
+        "fsm_wb.h": "c",
+        "fsm_main.h": "c",
+        "fsm_rb.h": "c",
+        "arduino.h": "c"
+    }
+}
