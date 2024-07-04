@@ -12,6 +12,7 @@ void fsm_rb_listen();
 void fsm_rb_start()
 {
     bitmask = 0x01;
+    read_byte = 0x00;
     fsm_rb_current_state = s_fsm_rb_signal_read;
     fsm_rb_signal_read();
 }

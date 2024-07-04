@@ -384,11 +384,11 @@ void fsm_main_process_temps()
     if (generic_reset_pulse()){
         itoa(temp_1, buf,10);
         UART_write_str(buf);
-        itoa(temp_2, buf,10);
+        itoa(temp_2, buf,2);
         UART_write_str(buf);
-        itoa(temp_3, buf,10);
+        itoa(temp_3, buf,2);
         UART_write_str(buf);
-        itoa(temp_4, buf,10);
+        itoa(temp_4, buf,2);
         UART_write_str(buf);
         int8_t temperatura_media = (temp_1+temp_2+temp_3+temp_4)/4;
         fsm_main_current_state = s_fsm_main_ended;
