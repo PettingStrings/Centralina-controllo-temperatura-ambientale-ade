@@ -14,7 +14,7 @@ char buf[50];
 
 int8_t temp_1, temp_2, temp_3, temp_4;
 int8_t temp_minima = 18, temp_massima = 25,
-       temp_media, temp_tolleranza = 5; // Temperatura in gradi
+       temp_media, temp_tolleranza = 5; // Valori in gradi
 
 uint8_t temp_msb = 0xff, temp_lsb = 0xff;
 uint8_t serial_byte_counter = 0;
@@ -420,7 +420,7 @@ void fsm_main_process_temps()
             temp_4 < temp_media - temp_tolleranza || temp_4 > temp_media + temp_tolleranza)
             fsm_main_current_state = s_fsm_start_transmission;
         else
-            fsm_main_current_state = s_fsm_main_send_reset_pulse_0;
+            fsm_main_current_state = s_fsm_wait_pause;
     }
 }
 uint8_t pause = FALSE;
@@ -565,7 +565,7 @@ void fsm_wait_pause()
     {
         start_timer_1();
     }
-    if (ticks_passed >= 5 * 2)
+    if (ticks_passed >= 2 * 2)
     {
         stop_timer_1();
         fsm_main_current_state = s_fsm_main_send_reset_pulse_0;
