@@ -15,9 +15,18 @@
 #define PIN_INPUT PIND
 #define PIN_OUTPUT PORTD
 
-extern volatile uint8_t timer_running;
+extern volatile uint8_t timer_2_running;
+extern  uint8_t timer_1_running;
+extern volatile uint8_t timer_1_compa;
+extern volatile uint64_t ticks_passed;
+
+void start_timer_1();
+void reset_timer_1();
+void stop_timer_1();
 
 void start_timer_int(int micro_time);
+void start_alarm();
+void stop_alarm();
 
 void usart_setup();
 void UART_write_str(char *str);

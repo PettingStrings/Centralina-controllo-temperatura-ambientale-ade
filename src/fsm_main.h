@@ -54,7 +54,15 @@ typedef enum __attribute__((packed))
     s_fsm_main_read_temp_4,
 
     s_fsm_main_process_temps,
-    s_fsm_main_ended
+
+s_fsm_start_transmission,
+s_fsm_check_temp_1,
+s_fsm_check_temp_2,
+s_fsm_check_temp_3,
+s_fsm_check_temp_4,
+s_fsm_end_transmission,
+
+    s_fsm_wait_pause
 } fsm_main_state;
 
 extern fsm_main_state fsm_main_current_state;

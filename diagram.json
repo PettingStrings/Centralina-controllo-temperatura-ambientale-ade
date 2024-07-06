@@ -18,28 +18,28 @@
       "id": "temp5",
       "top": -202.73,
       "left": 215.28,
-      "attrs": { "deviceID": "00000000000f", "genDebug": "0", "temperature": "-10", "owDebug": "1" }
+      "attrs": { "deviceID": "00000000000f", "genDebug": "0", "temperature": "-10", "owDebug": "0" }
     },
     {
       "type": "board-ds18b20",
       "id": "temp1",
       "top": -202.73,
       "left": 330.48,
-      "attrs": { "deviceID": "0000000000f0", "genDebug": "0", "temperature": "-10", "owDebug": "1" }
+      "attrs": { "deviceID": "0000000000f0", "genDebug": "0", "temperature": "-10", "owDebug": "0" }
     },
     {
       "type": "board-ds18b20",
       "id": "temp2",
       "top": -202.73,
       "left": 292.08,
-      "attrs": { "deviceID": "000000000f00", "genDebug": "0", "temperature": "-10", "owDebug": "1" }
+      "attrs": { "deviceID": "000000000f00", "genDebug": "0", "temperature": "-10", "owDebug": "0" }
     },
     {
       "type": "board-ds18b20",
       "id": "temp3",
       "top": -202.73,
       "left": 253.68,
-      "attrs": { "deviceID": "00000000f000", "genDebug": "0", "temperature": "-10", "owDebug": "1" }
+      "attrs": { "deviceID": "00000000f000", "genDebug": "0", "temperature": "-10", "owDebug": "0" }
     },
     {
       "type": "wokwi-resistor",
@@ -47,7 +47,57 @@
       "top": 23.15,
       "left": 153.6,
       "attrs": { "value": "5000" }
-    }
+    },
+    {
+      "type": "wokwi-led",
+      "id": "led1",
+      "top": -147.6,
+      "left": 3.8,
+      "attrs": { "color": "orange" }
+    },
+    {
+      "type": "wokwi-led",
+      "id": "led2",
+      "top": -138,
+      "left": -101.8,
+      "attrs": { "color": "cyan" }
+    },
+    {
+      "type": "wokwi-text",
+      "id": "text1",
+      "top": -163.2,
+      "left": -192,
+      "attrs": { "text": "Raffreddamento" }
+    },
+    {
+      "type": "wokwi-text",
+      "id": "text2",
+      "top": -172.8,
+      "left": -67.2,
+      "attrs": { "text": "Riscaldamento" }
+    },
+    {
+      "type": "wokwi-text",
+      "id": "text3",
+      "top": -230.4,
+      "left": 220.8,
+      "attrs": { "text": "S1" }
+    },
+    {
+      "type": "wokwi-text",
+      "id": "text4",
+      "top": -230.4,
+      "left": 259.2,
+      "attrs": { "text": "S2" }
+    },
+    {
+      "type": "wokwi-text",
+      "id": "text5",
+      "top": -230.4,
+      "left": 297.6,
+      "attrs": { "text": "S3" }
+    },
+    { "type": "wokwi-text", "id": "text6", "top": -230.4, "left": 336, "attrs": { "text": "S4" } }
   ],
   "connections": [
     [ "logic1:GND", "nano:GND.1", "black", [ "h-38.4", "v-115.2", "h115.2" ] ],
@@ -81,8 +131,14 @@
     [ "bb1:12b.j", "bb1:16b.j", "red", [ "v0" ] ],
     [ "nano:5V", "r1:1", "red", [ "v0" ] ],
     [ "bb1:1b.i", "bb1:4b.i", "red", [ "v0" ] ],
-    [ "bb1:1t.c", "logic1:D0", "violet", [ "v9.6", "h-19.2", "v124.8", "h-144" ] ],
-    [ "r1:2", "bb1:1b.j", "", [ "$bb" ] ]
+    [ "bz1:1", "nano:GND.2", "black", [ "v28.8", "h-9.6" ] ],
+    [ "bz1:2", "nano:3", "red", [ "v19.2", "h9.2" ] ],
+    [ "led1:A", "nano:4", "red", [ "v48", "h48" ] ],
+    [ "led2:A", "nano:5", "red", [ "v57.6", "h48" ] ],
+    [ "led2:C", "nano:GND.1", "black", [ "v144", "h154" ] ],
+    [ "led1:C", "nano:GND.1", "black", [ "v48", "h-57.2", "v105.6", "h172.8" ] ],
+    [ "r1:2", "bb1:1b.j", "", [ "$bb" ] ],
+    [ "logic1:D0", "bb1:1t.c", "violet", [ "h0", "v-28.8", "h153.6" ] ]
   ],
   "dependencies": {}
 }

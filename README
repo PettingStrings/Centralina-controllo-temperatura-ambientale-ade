@@ -1,0 +1,25 @@
+# Testo Del Progetto
+
+Con riferimento al protocollo di comunicazione 1-wire, ed alle note applicative per ATMEGA 328P
+https://ww1.microchip.com/downloads/en/AppNotes/Atmel-2579-Dallas-1Wire-Master-on-tinyAVR-and-megaAVR_ApplicationNote_AVR318.pdf
+ed alla traccia del progetto Wokwi:
+https://wokwi.com/projects/371584214315312129
+Realizzare un sistema Master che comunichi "Interrupt Driven" con 4 sensori di temperatura DS18B20:
+https://www.analog.com/media/en/technical-documentation/data-sheets/DS18B20.pdf
+disposti i 4 stanze diverse di un appartamento e ciascuno è identificato da un serial number già noto.
+Il sistema deve avere le seguenti funzionalità:
+a) acquisizione periodica (es.: ogni 3 minuti) della temperatura dai 4 sensori
+b) calcolo del valor medio e quindi attivazione del riscaldamento e del raffrescamento nel caso tale valore ecceda dei limiti prestabiliti
+c) segnalazione di allarme nel caso uno o più sensori abbia una temperatura molto distante dalla media. L'allarme consiste nell'attivare un buzzer del tipo: https://docs.wokwi.com/parts/wokwi-buzzer
+con un suono intermittente a frequenza di circa 1KHz, e che possa dare indicazione di quale o quali sensori sono fuori limite.
+
+Si consiglia di usare lo schema di relazione
+https://docs.google.com/document/d/1rGFvRPgfGvB2CWMSonWCLjraglA1d6n2AV3ZWNd9GDM/edit?usp=drive_link
+e di seguire il percorso di analisi e progettazione indicato in figura 3.2.29 delle dispense, secondo il paradigma:
+• Minori risorse impiegate per la macchina
+• Maggior sforzo per la progettazione e sviluppo.
+In particolare:
+a) componenti HW-SW dovranno essere "Automi" indipendenti che comunicano con variabili globali
+b) Le cadenze temporali (ritardi ecc.) dovranno essere governati dall'ISR del clock
+c) Non sono consentiti calcoli laboriosi nelle ISR. Tutte le elaborazioni pesanti devono essere svolte nella funzione loop ed essere "sincronizzate" con gli eventi in background.
+d) La gestione degli I/O deve essere diretta, senza usare le funzioni di "Arduino" (né altre librerie specifiche)

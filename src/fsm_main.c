@@ -13,6 +13,9 @@ const uint8_t DALLAS_SERIAL_4[] = {0x10, 0x00, 0x00, 0x00, 0x00, 0xf0, 0x00, 0x6
 char buf[50];
 
 int8_t temp_1, temp_2, temp_3, temp_4;
+int8_t temp_minima = 18, temp_massima = 25,
+       temp_media, temp_tolleranza = 5; // Temperatura in gradi
+
 uint8_t temp_msb = 0xff, temp_lsb = 0xff;
 uint8_t serial_byte_counter = 0;
 uint8_t lsb_read = 0;
@@ -64,6 +67,14 @@ void fsm_main_send_func_read_4();
 void fsm_main_read_temp_4();
 
 void fsm_main_process_temps();
+
+void fsm_start_transmission();
+void fsm_check_temp_1();
+void fsm_check_temp_2();
+void fsm_check_temp_3();
+void fsm_check_temp_4();
+void fsm_end_transmission();
+
 void fsm_main_ended();
 
 uint8_t generic_reset_pulse()
@@ -381,17 +392,183 @@ void fsm_main_read_temp_4()
 
 void fsm_main_process_temps()
 {
-    if (generic_reset_pulse()){
-        itoa(temp_1, buf,10);
-        UART_write_str(buf);
-        itoa(temp_2, buf,2);
-        UART_write_str(buf);
-        itoa(temp_3, buf,2);
-        UART_write_str(buf);
-        itoa(temp_4, buf,2);
-        UART_write_str(buf);
-        int8_t temperatura_media = (temp_1+temp_2+temp_3+temp_4)/4;
-        fsm_main_current_state = s_fsm_main_ended;
+    if (generic_reset_pulse())
+    {
+        temp_media = (temp_1 + temp_2 + temp_3 + temp_4) / 4;
+
+        if (temp_media < temp_minima)
+        {                           // Raffreddamento
+            PORTD &= ~(1 << PIND5); // Spegni Riscaldamento
+            DDRD |= (1 << PIND4);
+            PORTD |= (1 << PIND4);
+        }
+        else if (temp_media > temp_massima)
+        {                           // Riscaldamento
+            PORTD &= ~(1 << PIND4); // Spegni Raffreddamento
+            DDRD |= (1 << PIND5);
+            PORTD |= (1 << PIND5);
+        }
+        else
+        {
+            PORTD &= ~(1 << PIND5);
+            PORTD &= ~(1 << PIND4);
+        }
+
+        if (temp_1 < temp_media - temp_tolleranza || temp_1 > temp_media + temp_tolleranza ||
+            temp_2 < temp_media - temp_tolleranza || temp_2 > temp_media + temp_tolleranza ||
+            temp_3 < temp_media - temp_tolleranza || temp_3 > temp_media + temp_tolleranza ||
+            temp_4 < temp_media - temp_tolleranza || temp_4 > temp_media + temp_tolleranza)
+            fsm_main_current_state = s_fsm_start_transmission;
+        else
+            fsm_main_current_state = s_fsm_main_send_reset_pulse_0;
+    }
+}
+uint8_t pause = FALSE;
+void fsm_start_transmission()
+{
+    if (!timer_1_running && !pause)
+    {
+        start_alarm();
+        start_timer_1();
+    }
+
+    if (ticks_passed >= 2 * 2)
+    {
+        stop_alarm();
+        if (ticks_passed >= 3 * 2)
+        {
+            pause = FALSE;
+            stop_timer_1();
+            fsm_main_current_state = s_fsm_check_temp_1;
+        }
+    }
+}
+void fsm_check_temp_1()
+{
+    if (!(temp_1 < temp_media - temp_tolleranza || temp_1 > temp_media + temp_tolleranza))
+    {
+        fsm_main_current_state = s_fsm_check_temp_2;
+    }
+
+    if (!timer_1_running && !pause)
+    {
+        start_alarm();
+        start_timer_1();
+    }
+
+    if (ticks_passed >= 1 * 2)
+    {
+        stop_alarm();
+        if (ticks_passed >= 2 * 2)
+        {
+            pause = FALSE;
+            stop_timer_1();
+            fsm_main_current_state = s_fsm_check_temp_2;
+        }
+    }
+}
+void fsm_check_temp_2()
+{
+    if (!(temp_2 < temp_media - temp_tolleranza || temp_2 > temp_media + temp_tolleranza))
+    {
+        fsm_main_current_state = s_fsm_check_temp_3;
+    }
+
+    if (!timer_1_running && !pause)
+    {
+        start_alarm();
+        start_timer_1();
+    }
+
+    if (ticks_passed >= 2 * 2)
+    {
+        stop_alarm();
+        if (ticks_passed >= 3 * 2)
+        {
+            pause = FALSE;
+            stop_timer_1();
+            fsm_main_current_state = s_fsm_check_temp_3;
+        }
+    }
+}
+void fsm_check_temp_3()
+{
+    if (!(temp_3 < temp_media - temp_tolleranza || temp_3 > temp_media + temp_tolleranza))
+    {
+        fsm_main_current_state = s_fsm_check_temp_4;
+    }
+
+    if (!timer_1_running && !pause)
+    {
+        start_alarm();
+        start_timer_1();
+    }
+
+    if (ticks_passed >= 3 * 2)
+    {
+        stop_alarm();
+        if (ticks_passed >= 4 * 2)
+        {
+            pause = FALSE;
+            stop_timer_1();
+            fsm_main_current_state = s_fsm_check_temp_4;
+        }
+    }
+}
+void fsm_check_temp_4()
+{
+    if (!(temp_1 < temp_media - temp_tolleranza || temp_1 > temp_media + temp_tolleranza))
+    {
+        fsm_main_current_state = s_fsm_end_transmission;
+    }
+    if (!timer_1_running && !pause)
+    {
+        start_alarm();
+        start_timer_1();
+    }
+
+    if (ticks_passed >= 4 * 2)
+    {
+        stop_alarm();
+        if (ticks_passed >= 5 * 2)
+        {
+            pause = FALSE;
+            stop_timer_1();
+            fsm_main_current_state = s_fsm_end_transmission;
+        }
+    }
+}
+
+void fsm_end_transmission()
+{
+    if (!timer_1_running && !pause)
+    {
+        start_alarm();
+        start_timer_1();
+    }
+
+    if (ticks_passed >= 2 * 2)
+    {
+        stop_alarm();
+        if (ticks_passed >= 3 * 2)
+        {
+            pause = FALSE;
+            stop_timer_1();
+            fsm_main_current_state = s_fsm_wait_pause;
+        }
+    }
+}
+
+void fsm_wait_pause()
+{
+    if (!timer_1_running)
+    {
+        start_timer_1();
+    }
+    if (ticks_passed >= 5 * 2)
+    {
+        stop_timer_1();
+        fsm_main_current_state = s_fsm_main_send_reset_pulse_0;
     }
 }
 
@@ -489,7 +666,26 @@ void fsm_main_execute()
     case s_fsm_main_process_temps:
         fsm_main_process_temps();
         break;
-    case s_fsm_main_ended:
+    case s_fsm_start_transmission:
+        fsm_start_transmission();
+        break;
+    case s_fsm_check_temp_1:
+        fsm_check_temp_1();
+        break;
+    case s_fsm_check_temp_2:
+        fsm_check_temp_2();
+        break;
+    case s_fsm_check_temp_3:
+        fsm_check_temp_3();
+        break;
+    case s_fsm_check_temp_4:
+        fsm_check_temp_4();
+        break;
+    case s_fsm_end_transmission:
+        fsm_end_transmission();
+        break;
+    case s_fsm_wait_pause:
+        fsm_wait_pause();
         break;
     }
 }
